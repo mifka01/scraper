@@ -1,6 +1,5 @@
 import requests
 from lxml import html
-import pprint
 import pandas as pd
 import pathlib
 import json
@@ -95,7 +94,6 @@ class Scraper:
             data.append(self.scrape(tree))
             if i == 0:
                 self.one_time = time.time() - start_time
-        pprint.pp(data)
         self.export(data)
 
 Scraper().run()
