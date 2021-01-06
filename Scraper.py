@@ -27,7 +27,7 @@ class Scraper:
     def get_products(self, filename):
         with open(f'{self.base_path}/resources/{filename}') as f:
             self.products = json.load(f)
-        if self.test == True:
+        if self.test:
             self.products = self.products[:10]
         print(f"Počet produktů: {len(self.products)}")
 
@@ -41,8 +41,7 @@ class Scraper:
     def get(self, url):
         if self.login:
             return self.session.get(url).content
-        else:
-            return requests.get(url).content
+        return requests.get(url).content
 
     def export(self, data, errors):
         data = pd.DataFrame.from_records(data)
@@ -115,8 +114,7 @@ class Scraper:
                 action = int(input("Akce: "))
                 if action == 1:
                     continue
-                else:
-                    break
+                break
 
     def run(self):
         self.set_fields()
