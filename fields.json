@@ -1,0 +1,23 @@
+[
+    {
+        "name": "nazev",
+        "type": "str",
+        "xpath":"//*[@id='content']/div/div[1]/div/h1"
+    },
+    {
+        "name": "kod",
+        "type": "str",
+        "xpath":"//*[@id='content']/div/div[1]/div/span/span[2]"
+    },
+    {
+        "name": "dostupnost",
+        "type": "str",
+        "xpath":"//*[@id='product-detail-form']/div/div[3]/div[1]"
+    },
+    {
+        "name": "images",
+        "type": "links",
+        "xpath":"//*[@id='product-detail-form']/div/div[2]/div[2]/div/div/div/a"
+    }
+
+]
