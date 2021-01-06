@@ -9,7 +9,7 @@ import os
 
 class Scraper:
 
-    def __init__(self, products_filename="products.json", import_filename="fields.json", export_filename="export.csv", separator=";", fields_file=True, test=False, login=False, login_data={}, login_url=""):
+    def __init__(self, products_filename="products.json", import_filename="fields.json", export_filename="export.csv", separator=";", fields_file=True, test=False, login=False):
         self.base_path = str(pathlib.Path(__file__).parent.absolute())
         self.test = test
         self.get_products(products_filename)
@@ -19,6 +19,7 @@ class Scraper:
         self.import_filename = import_filename
         self.one_time = 2.66667
         self.fields_file = fields_file
+        self.start_time = None
         self.login = login
         if self.login:
             self.logme()
