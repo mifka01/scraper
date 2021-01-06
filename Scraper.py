@@ -19,8 +19,6 @@ class Scraper:
         self.import_filename = import_filename
         self.one_time = 2.66667
         self.fields_file = fields_file
-        self.login_data = login_data
-        self.login_url = login_url
         self.login = login
         if self.login:
             self.logme()
@@ -33,8 +31,10 @@ class Scraper:
         print(f"Počet produktů: {len(self.products)}")
 
     def logme(self):
+        with open(f'{self.base_path}/resources/login_data.json') as f:
+            login_data = json.load(f)
         with requests.Session() as session:
-            session.post(self.login_url, data=self.login_data)
+            session.post(login_data["url"], data=login_data["data"])
             self.session = session
 
     def get(self, url):
