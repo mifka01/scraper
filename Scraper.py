@@ -8,7 +8,7 @@ import time
 
 class Scraper:
 
-    def __init__(self, products_filename = "products.json", import_filename="fields.json",export_filename = "export.csv", separator=";", fields_file = True, test=False):
+    def __init__(self, products_filename = "products.json", import_filename="fields.json",export_filename = "export.csv", separator=";", fields_file = True, test=False, login=False, login_data={}, login_url=""):
         self.base_path = str(pathlib.Path(__file__).parent.absolute())
         self.test = test
         self.get_products(products_filename)
@@ -18,16 +18,29 @@ class Scraper:
         self.import_filename = import_filename
         self.one_time = 2.66667
         self.fields_file = fields_file
+        self.login_data = login_data
+        self.login_url = login_url
+        self.login = login
+        if self.login:
+            self.logme()
 
     def get_products(self, filename):
-        with open(f'{self.base_path}/{filename}') as f:
+        with open(f'{self.base_path}/resources/{filename}') as f:
             self.products = json.load(f)
         if self.test == True:
             self.products = self.products[:10]
         print(f"Počet produktů: {len(self.products)}")
 
+    def logme(self):
+        with requests.Session() as session:
+            session.post(self.login_url, data=self.login_data)
+            self.session = session
+
     def get(self, url):
-        return requests.get(url).content
+        if self.login:
+            return self.session.get(url).content
+        else:
+            return requests.get(url).content
 
     def export(self, data):
         data = pd.DataFrame.from_records(data)
@@ -36,12 +49,20 @@ class Scraper:
     def scrape(self, tree):
         data = {}
         for el in self.wanted_fields:
+            val = None
             if el["type"] == "str":
-                val = self.clean("".join(tree.xpath(el["xpath"] + "//text()")))
+                if len(el["split"][0])>0:
+                    for split in el["split"]:
+                        if val is None:
+                            val = self.clean(self.clean("".join(tree.xpath(el["xpath"] + "//text()"))).split(split[0])[split[1]])
+                        else:
+                            val = self.clean(val.split(split[0])[split[1]])
+                else:
+                    val = self.clean("".join(tree.xpath(el["xpath"] + "//text()")))
             elif el["type"] == "links":
                 val = self.list_to_string(self.remove_duplicates(tree.xpath(el["xpath"] + "/@href")))
-            elif el["type"] == "list":
-                val = self.list_to_string(self.remove_duplicates(tree.xpath(el["xpath"] + "//text()")))
+            elif el["type"] == "imgs":
+                val = self.list_to_string(self.remove_duplicates(tree.xpath(el["xpath"] + "/@src")))
             else:
                 val = ""
             data[el["name"]] = val
@@ -66,15 +87,15 @@ class Scraper:
 
     def set_fields(self):
         if self.fields_file:
-            with open(f'{self.base_path}/{self.import_filename}') as f:
+            with open(f'{self.base_path}/resources/{self.import_filename}') as f:
                 self.wanted_fields = json.load(f)
         else:
             print("Zadej pole pro parser")
-            print("1 pro konec 0 pro konec")
+            print("1 pro další 0 pro konec")
             while True:
                 self.wanted_fields.append({
                     "name": input("Zadej nazev: "),
-                    "type": input("Zadej typ [str, links, list]: "),
+                    "type": input("Zadej typ [str, links, list, imgs]: "),
                     "xpath":input("Zadej xpath: ")
                 })
                 action = int(input("Akce: "))
@@ -89,11 +110,17 @@ class Scraper:
         for i, product in enumerate(self.products):
             if i == 0:
                 start_time = time.time()
-            print("Progress {:2.1%}, Zbývající čas: {} min".format(i / len(self.products),round(self.one_time*len(self.products[i:len(self.products)])/60),0), end="\r")
+            print("Průběh {:2.1%}, Zbývající čas: {} min".format(i / len(self.products),round(self.one_time*len(self.products[i:len(self.products)])/60),0), end="\r")
             tree = html.fromstring(self.get(product))
             data.append(self.scrape(tree))
             if i == 0:
                 self.one_time = time.time() - start_time
         self.export(data)
 
-Scraper().run()
+login_data = {
+"login":"kocmazoo@protonmail.com",
+"pass":"baraaiwa",
+"button":"submit"
+}
+
+Scraper(test=True, login=True, login_url="https://b2b.jkanimals.cz/cs/uzivatel/ucet/login/", login_data=login_data).run()
