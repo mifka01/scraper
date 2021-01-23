@@ -4,12 +4,16 @@ import pandas as pd
 import pathlib
 import json
 import time
-import os
 
 
 class Scraper:
 
-    def __init__(self, products_filename="products.json", import_filename="fields.json", export_filename="export.csv", separator=";", fields_file=True, test=False, login=False):
+    def __init__(self, products_filename="products.json",
+                 import_filename="fields.json",
+                 export_filename="export.csv",
+                 separator=";", fields_file=True,
+                 test=False, login=False,
+                 with_categories = False):
         self.base_path = str(pathlib.Path(__file__).parent.absolute())
         self.test = test
         self.get_products(products_filename)
@@ -21,6 +25,7 @@ class Scraper:
         self.fields_file = fields_file
         self.start_time = None
         self.login = login
+        self.with_categories = with_categories
         if self.login:
             self.logme()
 
@@ -79,7 +84,8 @@ class Scraper:
             else:
                 val = ""
             data[el["name"]] = val
-
+            if self.with_categories:
+                data["cat"] = self.category
         return data
 
     def clean(self, bloated_string) -> str:
@@ -125,8 +131,12 @@ class Scraper:
             if i == 0:
                 start_time = time.time()
             print("Průběh {:2.1%}, Zbývající čas: {} min".format(i / len(self.products),
-                                                                 round(self.one_time*len(self.products[i:len(self.products)])/60), 0), end="\r")
-            tree = html.fromstring(self.get(product))
+                                                      round(self.one_time*len(self.products[i:len(self.products)])/60), 0), end="\r")
+            if self.with_categories:
+                self.category = product["cat"]
+                tree = html.fromstring(self.get(product["url"]))
+            else:
+                tree = html.fromstring(self.get(product))
             try:
                 data.append(self.scrape(tree))
             except:
@@ -137,4 +147,4 @@ class Scraper:
         self.export(data, errors)
 
 
-Scraper(test=True, login=True).run()
+Scraper(test=True, with_categories=True).run()
