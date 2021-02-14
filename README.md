@@ -4,7 +4,7 @@ Scraper in a universal website scraper that works on the basis of xpath.
 It works on the vast majority of websites.
 ## Settings
 * test -> Will do test run for 10 products.
-* login -> If your website needs to login before you can see products. (then you have to fill in **login.json** file too)
+* login -> If your website needs to login before you can see products. (then you have to fill in **login_data.json** file too)
 * fields_file -> Turn this on when you dont want to fill in the **fields.json** file. It will trigger console helper to fill it for you.
 * with_categories -> If you already have categories scraped.
 #### Filenames settings
