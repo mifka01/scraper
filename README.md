@@ -22,7 +22,7 @@ Scraper().run()
 ```
 #### products.json
 
-```json
+```javascript
 [
 "url_path_to_product",
 "url_path_to_product",
@@ -36,7 +36,7 @@ Scraper(with_categories=True).run()
 ```
 #### products.json
 
-```json
+```javascript
 [
     {
         "cat":"Category/for/product",
@@ -61,7 +61,7 @@ Scraper().run()
 ```
 Then you must fill in the fields.json file in resources folder.
 #### fields.json
-```json
+```javascript
 [
  {
   "name":"name",
