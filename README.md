@@ -6,23 +6,46 @@ It works on the vast majority of websites.
 * test -> Will do test run for 10 products.
 * login -> If your website needs to login before you can see products. (then you have to fill in **login.json** file too)
 * fields_file -> Turn this on when you dont want to fill in the **fields.json** file. It will trigger console helper to fill it for you.
-
+* with_categories -> If you already have categories scraped.
 #### Filenames settings
 * products_filename="products.json"
 * import_filename="fields.json"
 * export_filename="export.csv"
 * separator=";"
-* with_categories = False
 ## Usage
 
 First of all you must upload **products.json** file into resources folder.
 
+If with_categories setting is **False** (recommanded, by default)
+```python
+Scraper().run()
+```
 #### products.json
+
 ```json
 [
 "url_path_to_product",
 "url_path_to_product",
 "url_path_to_product",
+...
+]
+```
+If with_categories setting is **True**
+```python
+Scraper(with_categories=True).run()
+```
+#### products.json
+
+```json
+[
+    {
+        "cat":"Category/for/product",
+        "url":"url_path_to_product",
+    },
+    {
+        "cat":"Category/for/product",
+        "url":"url_path_to_product",
+    },
 ...
 ]
 ```
