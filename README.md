@@ -29,11 +29,11 @@ First of all you must upload **products.json** file into resources folder.
 
 If fields_file setting is **True** you will just follow console helper. 
 **Usage** section ends for you here with this setting on.
-```
+```python
 Scraper(fields_file=False).run()
 ```
 If ts set to **True** (recommanded, set by default)
-```
+```python
 Scraper().run()
 ```
 Then you must fill in the fields.json file in resources folder.
@@ -57,11 +57,11 @@ Then you must fill in the fields.json file in resources folder.
 #### Only used with str type according to example above 
 
 * split(matrix)
-```
+```python
 str.split("/")[:3].split(",")[1:2]
 ```
 * replace(matrix)
-```
+```python
 str.replace("#","hastag").replace("...","!")
 ```
 
