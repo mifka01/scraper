@@ -62,19 +62,31 @@ class Scraper:
         for el in self.wanted_fields:
             val = None
             if el["type"] == "str":
+                if len(el["replace"][0]) > 0:
+                    for replace in el["replace"]:
+                        if val is None:
+                             val = self.clean(self.clean(
+                            "".join(tree.xpath(el["xpath"] + "//text()"))).replace(replace[0],replace[1]))
+                        else:
+                            val = self.clean(val.replace(replace[0],replace[1]))
+                else:
+                    val = self.clean(
+                        "".join(tree.xpath(el["xpath"] + "//text()")))
                 if len(el["split"][0]) > 0:
                     for split in el["split"]:
                         if val is None:
                             val = self.clean(self.clean(
-                                "".join(tree.xpath(el["xpath"] + "//text()"))).split(split[0])[split[1]])
+                                "".join(tree.xpath(el["xpath"] + "//text()"))).split(split[0])[split[1]:split[2]])
                         else:
-                            val = self.clean(val.split(split[0])[split[1]])
+                            val = self.clean(val.split(split[0])[split[1]:split[2]])
                 else:
                     val = self.clean(
                         "".join(tree.xpath(el["xpath"] + "//text()")))
             elif el["type"] == "links":
                 val = self.list_to_string(self.remove_duplicates(
                     tree.xpath(el["xpath"] + "/@href")))
+            elif el["type"] == "raw":
+                val = html.tostring(tree.xpath(el["xpath"])[0],encoding="unicode")
             elif el["type"] == "imgs":
                 val = self.list_to_string(self.remove_duplicates(
                     tree.xpath(el["xpath"] + "/@src")))
@@ -90,7 +102,10 @@ class Scraper:
 
     def clean(self, bloated_string) -> str:
         if type(bloated_string) != str:
-            bloated_string = str(bloated_string)
+            if type(bloated_string) == list:
+                bloated_string = "/".join(bloated_string)
+            else:
+                bloated_string = str(bloated_string)
 
         if "\n" in bloated_string:
             if bloated_string.startswith("\n"):
@@ -147,4 +162,4 @@ class Scraper:
         self.export(data, errors)
 
 
-Scraper(test=True, with_categories=True).run()
+Scraper().run()
