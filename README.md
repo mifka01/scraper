@@ -52,7 +52,12 @@ Then you must fill in the fields.json file in resources folder.
 ```
 #### Fields
 * name(string) -> name of field in export file (csv)
-* type(string) -> output type of element (str, links, imgs, raw, cat)
+* type(string) -> output type of element
+** str -> clean text(string)
+** links -> return all urls(href) from *a* element in *url,url* format
+** imgs -> return all urls(src) from *img* element in *url,url* format
+** rawn -> return raw html in string format
+** cat -> if you are using with_categories=True
 
 #### Only used with str type according to example above 
 
