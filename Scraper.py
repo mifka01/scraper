@@ -13,7 +13,7 @@ class Scraper:
                  export_filename="export.csv",
                  separator=";", fields_file=True,
                  test=False, login=False,
-                 with_categories = False):
+                 with_categories=False):
         self.base_path = str(pathlib.Path(__file__).parent.absolute())
         self.test = test
         self.get_products(products_filename)
@@ -65,7 +65,7 @@ class Scraper:
                 if len(el["replace"][0]) > 0:
                     for replace in el["replace"]:
                         if val is None:
-                             val = self.clean(self.clean(
+                            val = self.clean(self.clean(
                             "".join(tree.xpath(el["xpath"] + "//text()"))).replace(replace[0],replace[1]))
                         else:
                             val = self.clean(val.replace(replace[0],replace[1]))
@@ -80,13 +80,17 @@ class Scraper:
                         else:
                             val = self.clean(val.split(split[0])[split[1]:split[2]])
                 else:
-                    val = self.clean(
-                        "".join(tree.xpath(el["xpath"] + "//text()")))
+                    if val is None:
+                        val = self.clean(
+                            "".join(tree.xpath(el["xpath"] + "//text()")))
+            elif el["type"] == "str_list":
+                val = self.list_to_string(self.remove_duplicates(
+                    tree.xpath(el["xpath"] + "//text()")), delimiter="~")
             elif el["type"] == "links":
                 val = self.list_to_string(self.remove_duplicates(
                     tree.xpath(el["xpath"] + "/@href")))
             elif el["type"] == "raw":
-                val = html.tostring(tree.xpath(el["xpath"])[0],encoding="unicode")
+                val = html.tostring(tree.xpath(el["xpath"])[0], encoding="unicode")
             elif el["type"] == "imgs":
                 val = self.list_to_string(self.remove_duplicates(
                     tree.xpath(el["xpath"] + "/@src")))
@@ -114,7 +118,7 @@ class Scraper:
         return " ".join(bloated_string.strip().split())
 
     def remove_duplicates(self, bloated_list: list) -> list:
-        return list(set(bloated_list))
+        return list(dict.fromkeys(bloated_list))
 
     def list_to_string(self, bloated_list, delimiter=",") -> str:
         return delimiter.join(bloated_list)
