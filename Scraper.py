@@ -84,8 +84,8 @@ class Scraper:
                         val = self.clean(
                             "".join(tree.xpath(el["xpath"] + "//text()")))
             elif el["type"] == "str_list":
-                val = self.list_to_string(self.remove_duplicates(
-                    tree.xpath(el["xpath"] + "//text()")), delimiter="~")
+                val = self.list_to_string(
+                    tree.xpath(el["xpath"] + "//text()"), delimiter="~")
             elif el["type"] == "links":
                 val = self.list_to_string(self.remove_duplicates(
                     tree.xpath(el["xpath"] + "/@href")))
